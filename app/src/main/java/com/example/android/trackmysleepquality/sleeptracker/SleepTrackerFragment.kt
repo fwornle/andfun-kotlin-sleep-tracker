@@ -20,7 +20,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -67,8 +66,8 @@ class SleepTrackerFragment : Fragment() {
         binding.sleepList.layoutManager = manager
 
         // instantiate adapter object for the RV
-        val adapter = SleepNightAdapter(SleepNightListener { nightID ->
-            Toast.makeText(context, "${nightID}", Toast.LENGTH_SHORT).show()
+        val adapter = SleepNightAdapter(SleepNightListener {
+            nightId ->  sleepTrackerViewModel.onSleepNightClicked(nightId)
         })
 
         // attach adapter to RecyclerView (w/h id "sleep_list" --> "sleepList")
@@ -81,8 +80,6 @@ class SleepTrackerFragment : Fragment() {
 
         // binding.setLifecycleOwner(this)
         binding.lifecycleOwner = this
-
-        
 
         // Add an Observer on the state variable for showing a Snackbar message
         // when the CLEAR button is pressed.
@@ -115,6 +112,17 @@ class SleepTrackerFragment : Fragment() {
                 // Reset state to make sure we only navigate once, even if the device
                 // has a configuration change.
                 sleepTrackerViewModel.doneNavigating()
+            }
+        })
+
+
+        // add an observer to navigate
+        sleepTrackerViewModel.navigateToSleepDataQuality.observe(viewLifecycleOwner, {night ->
+            night?.let {
+                this.findNavController().navigate(
+                    SleepTrackerFragmentDirections
+                        .actionSleepTrackerFragmentToSleepDetailFragment(night))
+                sleepTrackerViewModel.onSleepDataQualityNavigated()
             }
         })
 

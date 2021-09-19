@@ -34,10 +34,31 @@ class SleepTrackerViewModel(
         val database: SleepDatabaseDao,
         application: Application) : AndroidViewModel(application) {
 
-
+    // most recent data (being added to the 'all night' data records)
     private var tonight = MutableLiveData<SleepNight?>()
 
+    // the principal data of the app: all nights
     val nights = database.getAllNights()
+
+    // navigation control
+    private val _navigateToSleepDataQuality = MutableLiveData<Long>()
+    val navigateToSleepDataQuality
+        get() = _navigateToSleepDataQuality
+
+    // initialize LiveData '_navigateToSleepDataQuality' event (w/h nightID of clicked night)
+    // this data will be passed during navigation
+    //
+    // (no need to initialize this in 'init' of the SleepTrackerViewModel class, as it won't be used
+    // before the user clicks on the view to navigate to the SleepDataQuality detail fragment -->
+    // initialization happens during the OnClicked handler
+    fun onSleepNightClicked(id: Long){
+        _navigateToSleepDataQuality.value = id
+    }
+
+    // once navigated: reset event
+    fun onSleepDataQualityNavigated() {
+        _navigateToSleepDataQuality.value = null
+    }
 
     /**
      * Converted nights to Spanned for displaying.
@@ -201,5 +222,7 @@ class SleepTrackerViewModel(
         // Show a snackbar message, because it's friendly.
         _showSnackbarEvent.value = true
     }
+
+
 
 }
