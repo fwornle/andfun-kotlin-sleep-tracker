@@ -75,7 +75,7 @@ class SleepTrackerFragment : Fragment() {
 
         // observe LiveData "nights"
         sleepTrackerViewModel.nights.observe(viewLifecycleOwner, {
-            adapter.submitList(it)
+            adapter.addHeaderAndSubmitList(it)
         })
 
         // binding.setLifecycleOwner(this)
