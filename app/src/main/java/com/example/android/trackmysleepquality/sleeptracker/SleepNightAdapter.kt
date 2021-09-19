@@ -8,13 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.android.trackmysleepquality.database.SleepNight
 import com.example.android.trackmysleepquality.databinding.ListItemSleepNightBinding
 
-class SleepNightAdapter: ListAdapter<SleepNight, SleepNightAdapter.ViewHolder>(SleepNightDiffCallback()) {
+class SleepNightAdapter(val clickListener: SleepNightListener): ListAdapter<SleepNight, SleepNightAdapter.ViewHolder>(SleepNightDiffCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        // bind data to View(Holder) item
-        val item = getItem(position)
-        holder.bind(item)
+        // bind data to current ViewHolder item
+        holder.bind(clickListener, getItem(position))
 
     }
 
@@ -27,10 +26,15 @@ class SleepNightAdapter: ListAdapter<SleepNight, SleepNightAdapter.ViewHolder>(S
      */
     class ViewHolder private constructor(val binding: ListItemSleepNightBinding): RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: SleepNight) {
+        fun bind(clickListener: SleepNightListener, item: SleepNight) {
 
-            // associate SleepNight item with layout variable 'sleep'
+            // bind current SleepNight item to layout variable 'sleep'
             binding.sleep = item
+
+            // bind clickListener callback function to layout variable 'clickListener'
+            binding.clickListener = clickListener
+
+            // flush binding queue (?!)
             binding.executePendingBindings()
 
         }
@@ -58,5 +62,17 @@ class SleepNightAdapter: ListAdapter<SleepNight, SleepNightAdapter.ViewHolder>(S
         }
 
     }
+
 }
+
+// click listener - defined here, as we will use it from within the ViewHolder (which knows
+// on what 'view item' the user has clicked)
+//
+// parameter 'clickListener' is defined to hold a callback function that expects the sleepID
+// and calls upon some function body (Unit - this can be passed to the constructor of the class
+// as lambda)
+class SleepNightListener(val clickListener: (sleepId: Long) -> Unit) {
+    fun onClick(night: SleepNight) = clickListener(night.nightId)
+}
+
 

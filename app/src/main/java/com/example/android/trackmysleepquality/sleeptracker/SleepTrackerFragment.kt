@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -65,8 +66,12 @@ class SleepTrackerFragment : Fragment() {
         val manager = GridLayoutManager(activity, 3)
         binding.sleepList.layoutManager = manager
 
-        // attach adaptor to RecyclerView (w/h id "sleep_list" --> "sleepList")
-        val adapter = SleepNightAdapter()
+        // instantiate adapter object for the RV
+        val adapter = SleepNightAdapter(SleepNightListener { nightID ->
+            Toast.makeText(context, "${nightID}", Toast.LENGTH_SHORT).show()
+        })
+
+        // attach adapter to RecyclerView (w/h id "sleep_list" --> "sleepList")
         binding.sleepList.adapter = adapter
 
         // observe LiveData "nights"
