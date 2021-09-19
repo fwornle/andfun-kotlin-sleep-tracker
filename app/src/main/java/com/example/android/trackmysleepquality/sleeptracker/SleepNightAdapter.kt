@@ -2,32 +2,61 @@ package com.example.android.trackmysleepquality.sleeptracker
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android.trackmysleepquality.R
-import com.example.android.trackmysleepquality.TextItemViewHolder
 import com.example.android.trackmysleepquality.database.SleepNight
-import org.w3c.dom.Text
+import com.example.android.trackmysleepquality.databinding.ListItemSleepNightBinding
 
-class SleepNightAdapter: RecyclerView.Adapter<TextItemViewHolder>() {
-    var data = listOf<SleepNight>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
+class SleepNightAdapter: ListAdapter<SleepNight, SleepNightAdapter.ViewHolder>(SleepNightDiffCallback()) {
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+        // bind data to View(Holder) item
+        val item = getItem(position)
+        holder.bind(item)
+
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder.from(parent)
+    }
+
+    /**
+     * ViewHolder that holds our view (from layout)
+     */
+    class ViewHolder private constructor(val binding: ListItemSleepNightBinding): RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: SleepNight) {
+
+            // associate SleepNight item with layout variable 'sleep'
+            binding.sleep = item
+            binding.executePendingBindings()
+
         }
 
-    override fun getItemCount() = data.size
-
-    override fun onBindViewHolder(holder: TextItemViewHolder, position: Int) {
-        val item = data[position]
-        holder.textView.text = item.sleepQuality.toString()
+        // inflate layout for RC views and use it to initialize the VH
+        companion object {
+            fun from(parent: ViewGroup): ViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = ListItemSleepNightBinding
+                    .inflate(layoutInflater, parent, false)
+                return ViewHolder(binding)
+            }
+        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TextItemViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val view = layoutInflater.inflate((R.layout.text_item_view), parent, false) as TextView
-        return TextItemViewHolder(view)
-    }
+    // view data differ...
+    class SleepNightDiffCallback: DiffUtil.ItemCallback<SleepNight>() {
 
+        override fun areItemsTheSame(oldItem: SleepNight, newItem: SleepNight): Boolean {
+            return oldItem.nightId == newItem.nightId
+        }
+
+        override fun areContentsTheSame(oldItem: SleepNight, newItem: SleepNight): Boolean {
+            return oldItem == newItem
+        }
+
+    }
 }
 
