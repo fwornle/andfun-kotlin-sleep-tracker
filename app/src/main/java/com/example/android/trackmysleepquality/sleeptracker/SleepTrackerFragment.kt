@@ -63,6 +63,14 @@ class SleepTrackerFragment : Fragment() {
 
         // create LayoutManager and bind it to the RecyclerView (ID: sleep_list --> sleepList)
         val manager = GridLayoutManager(activity, 3)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+
+            // header row (pos: 0) --> 3 elements wide (= entire row)
+            override fun getSpanSize(position: Int) =  when (position) {
+                0 -> 3
+                else -> 1
+            }
+        }
         binding.sleepList.layoutManager = manager
 
         // instantiate adapter object for the RV
