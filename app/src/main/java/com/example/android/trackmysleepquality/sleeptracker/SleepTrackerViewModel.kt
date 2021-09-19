@@ -51,6 +51,11 @@ class SleepTrackerViewModel(
     // (no need to initialize this in 'init' of the SleepTrackerViewModel class, as it won't be used
     // before the user clicks on the view to navigate to the SleepDataQuality detail fragment -->
     // initialization happens during the OnClicked handler
+    //
+    // this LiveData setter function is called from within the SleepNightAdapter's clickListener,
+    // which is bound to the (clicked) view element from within the ViewHolder's bind method (note:
+    // the VH knows what's clicked --> place this click handler in the VH)
+    // therefore: click --> VH/Adapter --> ViewModel (LiveData) --> Fragment/layout (DataBinding)
     fun onSleepNightClicked(id: Long){
         _navigateToSleepDataQuality.value = id
     }
